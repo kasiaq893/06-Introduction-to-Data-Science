@@ -1,6 +1,6 @@
 ---
 title: "Lab 05 - Halloween Candies & Data Viz Improvement"
-author: "User1, User2, User3 and User4 - Team Name"
+author: "Kasia"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -21,7 +21,7 @@ library(ggplot2)
 knitr::include_graphics("img/Speaking-the-world.jpg")
 ```
 
-_Write your comments about image 1 below_
+_I don't know what the part on right hand side is supposed to represent. The data in different rows is in different units (billions vs millions speakers), which makes it confusing._
 
 
 
@@ -32,7 +32,7 @@ _Write your comments about image 1 below_
 knitr::include_graphics("img/rose-pop-density-total-area-bw.jpg")
 ```
 
-_Write your comments about image 2 below_
+_It's a pie chart, which is bad. The viewer doesn't know what data is represented (population density or total area?)._
 
 
 
@@ -43,7 +43,7 @@ _Write your comments about image 2 below_
 knitr::include_graphics("img/life-expectancy-rule-of-law.png")
 ```
 
-_Write your comments about image 3 below_
+_There is no title, no scale on the axes and no legend. What does 'rule of law' mean? How is it even quantitative?_
 
 
 
@@ -54,7 +54,7 @@ _Write your comments about image 3 below_
 knitr::include_graphics("img/global-income-dist.PNG")
 ```
 
-_Write your comments about image 4 below_
+_It's hard to see data just for one region, how are 'developed countries' defined?_
 
 
 
@@ -83,7 +83,7 @@ glimpse(candy_df)
 How many observations and variables are in this dataset?
 Did you identify the type of variables, remember that this detail is crucial to create which kind of data visualization in general. 
 
-_Write your comments about results_
+_There are 85-1=84 observations and 13 variables. There is 1 character variable, 3 double variables and 9 logical variables._
 
 # Data viz - One variable at a time
 
@@ -99,8 +99,21 @@ candy_df <- candy_df %>%
 Complete the following code to get the data viz to represent "how many candies contain caramel via bar plot". Fill in the blanks, remove the # symbol in front of your code and the execute the code chunk via green play button.
 
 ```{r}
-# ggplot(candy_rankings, aes(x = ______)) +
-#  _____() +
+ggplot(candy_rankings, aes(x = caramel)) +
+  geom_bar() +
+  labs(
+    title = 'Number of candies containing caramel',
+    x = 'Caramel content',
+    y = 'Count'
+    )
+
+ggplot(candy_rankings, aes(x = chocolate)) +
+  geom_bar() + 
+  labs(
+    title = 'Number of candies containing chocolate',
+    x = 'Chocolate content',
+    y = 'Count'
+  )
 ```
 
 ## Exercise 3
@@ -108,7 +121,16 @@ Complete the following code to get the data viz to represent "how many candies c
 Now look at a numerical variable, such as `winpercent`. Create an histogram for this variable using ggplot2 functions below. Include informative x and y labels and a title, as a good practice.
 
 ```{r}
-# Your code here
+candy_rankings %>% 
+  ggplot(aes(
+    x = winpercent
+  )) +
+  geom_histogram(bins = 25) +
+  labs(
+    title = 'Candies win percent distribution',
+    x = 'Win percent',
+    y = 'Count'
+  )
 
 ```
 
