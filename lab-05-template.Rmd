@@ -103,7 +103,7 @@ ggplot(candy_rankings, aes(x = caramel)) +
   geom_bar() +
   labs(
     title = 'Number of candies containing caramel',
-    x = 'Caramel content',
+    x = 'Contains caramel',
     y = 'Count'
     )
 
@@ -111,7 +111,7 @@ ggplot(candy_rankings, aes(x = chocolate)) +
   geom_bar() + 
   labs(
     title = 'Number of candies containing chocolate',
-    x = 'Chocolate content',
+    x = 'Contains chocolate',
     y = 'Count'
   )
 ```
@@ -144,31 +144,68 @@ How about using the both variables; chocolate vs winpercent? Run the following i
 Fill in the blanks, remove the # symbol in front of your code and the execute the code chunk via green play button.
 
 ```{r}
-# Your code here
-#ggplot(candy_df, aes(x = ___________)) +
-#  geom_histogram() +
-#  facet_wrap(___________)
+ggplot(candy_df, aes(x = winpercent, fill = caramel)) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~chocolate)
 
 ```
 
 
-- Consider adding the `fill = caramel` within the aes() vs. geom_histogram(), what do you get? 
+- Consider adding the `fill = caramel` within the aes() vs. geom_histogram(), what do you get?
+- _The graph of winpercent based on whether it contains caramel and chocolate._
 
 ## Exercise 5
 
 Create a visualization that examines the relationship between a candy’s win percentage and whether it contains chocolate. Include x and y labels and a title. Describe any relationship you see.
 
 ```{r}
-# your code here
+candy_rankings %>%
+  ggplot(aes(
+    x = winpercent
+  )) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~chocolate) +
+  labs(
+    title = 'Candies win percentage based on it chocolate content',
+    x = 'Win percentage',
+    y = 'Number of candies'
+  )
 
+candy_rankings %>%
+  ggplot(aes(
+    x = winpercent
+  )) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~caramel) +
+  labs(
+    title = 'Candies win percentage based on it caramel content',
+    x = 'Win percentage',
+    y = 'Number of candies'
+  )
+
+candy_rankings %>%
+  ggplot(aes(
+    x = winpercent
+  )) +
+  geom_histogram(bins = 15) +
+  facet_wrap(~fruity) +
+  labs(
+    title = 'Candies win percentage based on it fruit content',
+    x = 'Win percentage',
+    y = 'Number of candies'
+  )
 ```
+- _Candies which contain chocolate generally have higher win percentage. Mean and median confirm it._
+- _There is not a lot of data for candies containing caramel, but it appears that whether a candy contains it or not has no effect on its win percentage. Based on the mean and median, candies containing caramel have higher win percentage._
+- _Fruity candies have smaller win percentage. Mean and median confirm it._ 
+
 
 - Consider the similar pair by replacing chocolate with caramel, fruity and compare their results. 
 - Also include summary statistics details for this discussion by using the calculation below: 
 
 ```{r}
 candy_rankings %>%
-  group_by(chocolate) %>%
+  group_by(fruity) %>%
   summarise(
     n = n(),
     mean_win = mean(winpercent),
@@ -182,40 +219,108 @@ candy_rankings %>%
 Do more expensive candies win more often? Make a scatterplot of pricepercent (x) against winpercent (y). Describe their relationship.  
 
 ```{r}
-# your code here
+candy_rankings %>% 
+  ggplot(aes(
+    x = pricepercent,
+    y = winpercent,
+    colour = chocolate,
+    shape = bar
+  )) +
+  geom_point()
 
 ```
-
+_There doesn't seem to be much correlation._
 
 - Add `color = chocolate` to add a third variable to the created visualization
+- _For candies containing the chocolate, the higher the price higher win percentage. For candies without chocolate, the trend is opposite._
 - How to facet this by using another categorical variable such as `bar`? 
-
+- _By adding shape or size or level of transparency._
 
 ## Exercise 7
 
 Are chocolate candies more likely to be candy bars? Make a filled bar plot with chocolate on the x-axis and fill = bar. Describe what you see.
 
 ```{r}
-# Your code here
+candy_rankings %>%
+  ggplot(aes(
+    x = chocolate,
+    fill = bar
+  )) +
+  geom_bar()
 
 ```
-
+_Yes, chocolate candies are more likely to be bar candies than not-chocolate candies._
 
 ## Exercise 8
 Create a new variable called price per sugar ratio as the division of pricepercent and sugarpercent. Plot it against winpercent, and set the color of all points to blue for the competitors who are not "One dime" or "One quarter". Include x and y labels and a title. Describe any relationship you see.
 
 ```{r}
-# your code here
+candy_rankings %>%
+  mutate(
+    price_per_sugar = pricepercent / sugarpercent,
+    type = case_when(
+      competitorname == 'One dime' | competitorname == 'One quarter' ~ 'special',
+      TRUE ~ 'normal'
+    )
+  ) %>% 
+  #filter(type == 'normal') %>%
+  ggplot(aes(
+    x = price_per_sugar,
+    y = sugarpercent,
+    colour = type
+  )) +
+  geom_point() +
+  scale_colour_manual(
+    values = c(
+      "normal" = "blue",
+      "special" = "orange"
+    )
+  ) +
+  labs(
+    title = 'Price per sugar ratio vs Sugar percentage',
+    x = 'Price per sugar ratio',
+    y = 'Sugar percentage',
+    colour = ''
+  ) +
+  theme(legend.position = "none")
 
 ```
-
+- _The 'One dime' and 'One quarter' seem to be extreme values and significantly deviate from the norm. If we remove them from the visualization, we can see the data more clearly. The higher the sugar percentage, smaller the price per sugar ratio._
 
 ## Exercise 9
 
 Modify your plot in Exercise 8 to facet by whether a candy is bar-shaped. Have the color reflect whether the candy is fruity or not. The plot must include x and y labels along with a title. How do these plots compare to each other?
 
 ```{r}
-# your code here
+candy_rankings %>%
+  mutate(
+    price_per_sugar = pricepercent / sugarpercent,
+    type = case_when(
+      competitorname == 'One dime' | competitorname == 'One quarter' ~ 'special',
+      TRUE ~ 'normal'
+    )
+  ) %>% 
+  filter(type == 'normal') %>%
+  ggplot(aes(
+    x = price_per_sugar,
+    y = sugarpercent,
+    colour = fruity
+  )) +
+  geom_point() +
+  scale_colour_manual(
+    values = c(
+      'FALSE' = "blue",
+      'TRUE' = "orange"
+    )
+  ) +
+  labs(
+    title = 'Price per sugar ratio vs Sugar percentage',
+    subtitle = 'By fruit content and candy type',
+    x = 'Price per sugar ratio',
+    y = 'Sugar percentage',
+    colour = ''
+  ) +
+  facet_wrap(~bar)
 
 ```
 
